@@ -19,21 +19,21 @@ namespace orderMicroService.Infrastructure.Persistance
         public async Task<IEnumerable<Order>> GetAllAsync()
         {
             await using var connection = _dbConnectionFactory.CreateConnection();
-            const string query = "";//"SELECT * FROM fn_get_active_orders()";
+            const string query = "SELECT * FROM Orders";
             return await connection.QueryAsync<Order>(query);
         }
 
         public async Task<Order> GetByIdAsync(int id)
         {
             await using var connection = _dbConnectionFactory.CreateConnection();
-            const string query = "";// "SELECT * FROM fn_get_order_by_id(@id)";//cambiar
+            const string query = "SELECT * FROM Orders WHERE Id = @id";
             return await connection.QuerySingleOrDefaultAsync<Order>(query, new { id });
         }
 
         public async Task<bool> CreateAsync(Order order, int userId)
         {
             await using var connection = _dbConnectionFactory.CreateConnection();
-            const string query = "";//"SELECT fn_insert_service(@name, @type, @price, @description, @created_by_user_id)";
+            const string query = "INSERT INTO Orders (Total, User_Account_id) VALUES (@total, @created_by_user_id) RETURNING Id";
             var parameters = new
             {
                 total = order.Total,
@@ -47,7 +47,7 @@ namespace orderMicroService.Infrastructure.Persistance
         public async Task<bool> UpdateAsync(Order order, int userId)
         {
             await using var connection = _dbConnectionFactory.CreateConnection();
-            const string query = "";//"SELECT fn_update_service(@id, @name, @type, @price, @description, @modified_by_user_id)";
+            const string query = "UPDATE Orders SET Total = @total, Owner_id = @owner_id, Vehicle_id = @vehicle_id, User_Account_id = @user_id WHERE Id = @id";
             var parameters = new
             {
                 id = order.Id,
@@ -63,7 +63,7 @@ namespace orderMicroService.Infrastructure.Persistance
         public async Task<bool> DeleteByIdAsync(int id, int userId)
         {
             await using var connection = _dbConnectionFactory.CreateConnection();
-            const string query = "";//"SELECT fn_soft_delete_service(@id, @modified_by_user_id)";
+            const string query = "DELETE FROM Orders WHERE Id = @id";
             var parameters = new
             {
                 id,
